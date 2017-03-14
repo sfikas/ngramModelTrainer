@@ -1,5 +1,6 @@
 import sys
 import fileinput
+import numpy as np
 from collections import Counter
 
 alphabet = [
@@ -18,11 +19,21 @@ def strip(word):
             res += c
     return ''.join(res)
 
+def normalize(a):
+    a 
+
 def countUnigrams(word):
     res = Counter()
     l = list(word)
     for i in range(0, len(word)):
         res[l[i]] += 1
+    return res
+
+def computeUnigramsPdf(unigrams):
+    res = np.zeros(len(alphabet))
+    for i in range(0, len(alphabet)):
+        res[i] = unigrams[alphabet[i]]
+    res = res / res.sum() #np.linalg.sum(res)
     return res
 
 def countBigrams(word):
@@ -32,12 +43,32 @@ def countBigrams(word):
         res[(l[i], l[i+1])] += 1
     return res
 
+def computeBigramsPdf(bigrams):
+    # This is the (joint) probability of bigrams
+    res = np.zeros( (len(alphabet), len(alphabet)) )
+    for i in range(0, len(alphabet)):
+        for j in range(0, len(alphabet)):
+            res[i] = bigrams[alphabet[i], alphabet[i]]
+    res = res / res.flatten().sum()
+    return res
+
 def countTrigrams(word):
     res = Counter()
     l = list(word)
     for i in range(0, len(word)-2):
         res[(l[i], l[i+1], l[i+2])] += 1
     return res
+
+def computeTrigramsPdf(trigrams):
+    # This is the (joint) probability of trigrams
+    res = np.zeros( (len(alphabet), len(alphabet), len(alphabet)) )
+    for i in range(0, len(alphabet)):
+        for j in range(0, len(alphabet)):
+            for k in range(0, len(alphabet)):
+                res[i] = trigrams[alphabet[i], alphabet[i], alphabet[i]]
+    res = res / res.flatten().sum()
+    return res
+    
 
 if __name__ == "__main__":
     unigrams = Counter()
@@ -48,6 +79,9 @@ if __name__ == "__main__":
         unigrams += countUnigrams(strippedword)
         bigrams += countBigrams(strippedword)
         trigrams += countTrigrams(strippedword)
-    print(unigrams)
-    print(bigrams)
-    print(trigrams)
+    unigramsPdf = computeUnigramsPdf(unigrams)
+    bigramsPdf = computeBigramsPdf(bigrams)
+    trigramsPdf = computeTrigramsPdf(trigrams)
+    print(unigramsPdf)
+    print(bigramsPdf)
+    print(trigramsPdf)
