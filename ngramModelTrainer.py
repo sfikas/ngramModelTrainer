@@ -66,7 +66,9 @@ def computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf):
     for previous in range(0, len(alphabet)):
         for i in range(0, len(alphabet)):
             res[previous, i] = bigramsJointPdf[previous, i] / unigramsPdf[previous]
-    #TODO: Renormalize (to avoid numerical errors)            
+    #Renormalize (to avoid numerical errors)
+    for previous in range(0, len(alphabet)):
+        res[previous, :] = res[previous, :] / res[previous, :].flatten().sum()
     return res
 
 def countTrigrams(word):
@@ -94,7 +96,10 @@ def computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf):
         for anteprevious in range(0, len(alphabet)):
             for i in range(0, len(alphabet)):
                 res[anteprevious, previous, i] = trigramsJointPdf[anteprevious, previous, i] / bigramsJointPdf[anteprevious, previous]
-    #TODO: Renormalize (to avoid numerical errors)
+    #Renormalize (to avoid numerical errors)
+    for previous in range(0, len(alphabet)):
+        for anteprevious in range(0, len(alphabet)):
+            res[anteprevious, previous, :] = res[anteprevious, previous, :] / res[anteprevious, previous, :].flatten().sum()
     return res
 
 
