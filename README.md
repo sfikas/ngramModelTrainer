@@ -28,7 +28,7 @@ The output is saved in three files:
 The format of the files is as follows. In each line a single floating-point number is stored. This corresponds to a log probability.
 More specifically for each file:
 
-### Unigrams.out
+### unigrams.out
 
 In the i<sup>th</sup> line, the unigram log-probability for the i<sup>th</sup> alphabet letter is stored, i.e. the file looks like
 ```
@@ -39,7 +39,7 @@ log p( c )
 log p( 9 )
 ```
 
-### Bigrams.out
+### bigrams.out
 
 In the first 36 lines, the log-probability for the i<sup>th</sup> alphabet letter given a respective alphabet letter is stored. For example, the first 36 lines would be
 ```
@@ -61,7 +61,7 @@ log p( b | 9 )
 
 And so on.
 
-### Trigrams.out
+### trigrams.out
 
 In the first 36x36 lines, the log-probability for the i<sup>th</sup> alphabet letter given two previous alphabet letters is stored. For example, the first 36 lines would be
 ```
