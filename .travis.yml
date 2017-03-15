@@ -1,0 +1,11 @@
+sudo: required
+dist: trusty
+language: python
+python:
+  - "2.7"
+before_install: 
+  - set -ev
+  - sudo apt-get update
+  - sudo apt-get install python-numpy -y
+  - cd scriptnet
+script: python ngramModelTrainer.py
