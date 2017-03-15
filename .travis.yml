@@ -6,6 +6,6 @@ python:
 before_install: 
   - set -ev
   - sudo apt-get update
-  - sudo apt-get install python-numpy -y
-  - sudo apt-get install python-scipy -y
+install:
+  - pip install --only-binary=numpy,scipy numpy scipy
 script: python ngramModelTrainer.py
