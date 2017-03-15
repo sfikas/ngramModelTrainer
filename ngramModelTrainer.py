@@ -4,10 +4,10 @@ import numpy as np
 from collections import Counter
 
 alphabet = [
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
     'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
     'u', 'v', 'w', 'x', 'y', 'z',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',    
 ]
 
 def strip(word):
@@ -18,9 +18,6 @@ def strip(word):
         if c in alphabet:
             res += c
     return ''.join(res)
-
-def normalize(a):
-    a 
 
 def countUnigrams(word):
     res = Counter()
