@@ -1,3 +1,4 @@
+import unittest
 import sys
 import fileinput
 import numpy as np
@@ -104,12 +105,11 @@ def computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf):
             res[anteprevious, previous, :] = res[anteprevious, previous, :] / res[anteprevious, previous, :].flatten().sum()
     return res
 
-
-if __name__ == "__main__":
+def main(filename):
     unigrams = Counter()
     bigrams = Counter()
     trigrams = Counter()
-    for word in fileinput.input([sys.argv[1]]):
+    for word in fileinput.input(filename):
         strippedword = strip(word)
         unigrams += countUnigrams(strippedword)
         bigrams += countBigrams(strippedword)
@@ -117,12 +117,42 @@ if __name__ == "__main__":
     unigramsPdf = computeUnigramsPdf(unigrams)
     bigramsJointPdf = computeBigramsJointPdf(bigrams)
     trigramsJointPdf = computeTrigramsJointPdf(trigrams)
+    return unigramsPdf, bigramsJointPdf, trigramsJointPdf    
 
-    #print(np.log(computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf)))
-    #print(np.log(computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf)))
-    scipy.io.savemat(basename(sys.argv[1])+'.ngrams.mat', dict(
-        unigrams=unigramsPdf, 
-        bigrams=computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf),
-        trigrams=computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf),
+class TestMethods(unittest.TestCase):
+    def test_unigrams(self):
+        unigramsPdf, b, c = main('fixtures/dummy.txt')
+        self.assertTrue(abs(unigramsPdf[alphabet.index('a')] - 5./35.) < 1e-5)
+        self.assertTrue(abs(unigramsPdf[alphabet.index('z')]) < 1e-5)
+
+    def test_bigrams(self):
+        unigramsPdf, bigramsJointPdf, c = main('fixtures/dummy.txt')
+        bigramsPdf = computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf)
+        self.assertTrue(abs(bigramsPdf[alphabet.index('l'), alphabet.index('l')] - 1./4.) < 1e-5)
+
+    def test_trigrams(self):
+        unigramsPdf, bigramsJointPdf, trigramsJointPdf = main('fixtures/dummy.txt')
+        trigramsPdf = computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf)
+        self.assertTrue(abs(trigramsPdf[alphabet.index('a'), alphabet.index('i'), alphabet.index('n')] - 1.) < 1e-5)
+        self.assertTrue(abs(trigramsPdf[alphabet.index('t'), alphabet.index('h'), alphabet.index('e')] - 1.) < 1e-5)
+        self.assertTrue(abs(trigramsPdf[alphabet.index('x'), alphabet.index('y'), alphabet.index('z')]) < 2./36.)
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        testMode = False
+        filename = sys.argv[1]
+    else:
+        testMode = True
+
+    if not testMode:
+        unigramsPdf, bigramsJointPdf, trigramsJointPdf = main(filename)
+        #print(np.log(computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf)))
+        #print(np.log(computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf)))
+        scipy.io.savemat(basename(filename)+'.ngrams.mat', dict(
+            unigrams=unigramsPdf, 
+            bigrams=computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf),
+            trigrams=computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf),
+            )
         )
-    )
+    else:
+        unittest.main()
