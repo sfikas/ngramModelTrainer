@@ -28,9 +28,11 @@ def countUnigrams(word):
 
 def computeUnigramsPdf(unigrams):
     res = np.zeros(len(alphabet))
-    for i in range(0, len(alphabet)):
+    for i in range(0, len(alphabet)):        
         res[i] = unigrams[alphabet[i]]
-    res = res / res.sum() #np.linalg.sum(res)
+        if res[i] == 0:
+            res[i] = np.finfo(float).eps
+    res = res / res.sum()
     return res
 
 def countBigrams(word):
@@ -40,13 +42,31 @@ def countBigrams(word):
         res[(l[i], l[i+1])] += 1
     return res
 
-def computeBigramsPdf(bigrams):
+def computeBigramsJointPdf(bigrams):
     # This is the (joint) probability of bigrams
     res = np.zeros( (len(alphabet), len(alphabet)) )
     for i in range(0, len(alphabet)):
         for j in range(0, len(alphabet)):
-            res[i] = bigrams[alphabet[i], alphabet[i]]
+            res[i, j] = bigrams[alphabet[i], alphabet[j]]
+            if res[i, j] == 0:
+                res[i, j] = np.finfo(float).eps
     res = res / res.flatten().sum()
+    return res
+
+def computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf):
+    # This is the conditional probability of bigrams
+    # The argument 'previous' is an index pointing to the alphabet letter that is
+    # assumed to be the pdf condition.
+    # Formally: p( . | previous )
+
+    # jointpdf will be p( x, x-1 = previous )
+    # which breaks down as p( x | x-1 = previous ) p( x-1 = previous ),
+    # hence dividing by p ( x-1 = previous ) leaves us with the conditional probability.
+    res = np.zeros((len(alphabet), len(alphabet)))
+    for previous in range(0, len(alphabet)):
+        for i in range(0, len(alphabet)):
+            res[previous, i] = bigramsJointPdf[previous, i] / unigramsPdf[previous]
+    #TODO: Renormalize (to avoid numerical errors)            
     return res
 
 def countTrigrams(word):
@@ -56,16 +76,27 @@ def countTrigrams(word):
         res[(l[i], l[i+1], l[i+2])] += 1
     return res
 
-def computeTrigramsPdf(trigrams):
+def computeTrigramsJointPdf(trigrams):
     # This is the (joint) probability of trigrams
     res = np.zeros( (len(alphabet), len(alphabet), len(alphabet)) )
     for i in range(0, len(alphabet)):
         for j in range(0, len(alphabet)):
             for k in range(0, len(alphabet)):
-                res[i] = trigrams[alphabet[i], alphabet[i], alphabet[i]]
+                res[i, j, k] = trigrams[alphabet[i], alphabet[j], alphabet[k]]
+                if res[i, j, k] == 0:
+                    res[i, j, k] = np.finfo(float).eps                
     res = res / res.flatten().sum()
     return res
-    
+
+def computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf):
+    res = np.zeros( (len(alphabet), len(alphabet), len(alphabet)) )
+    for previous in range(0, len(alphabet)):
+        for anteprevious in range(0, len(alphabet)):
+            for i in range(0, len(alphabet)):
+                res[anteprevious, previous, i] = trigramsJointPdf[anteprevious, previous, i] / bigramsJointPdf[anteprevious, previous]
+    #TODO: Renormalize (to avoid numerical errors)
+    return res
+
 
 if __name__ == "__main__":
     unigrams = Counter()
@@ -77,8 +108,10 @@ if __name__ == "__main__":
         bigrams += countBigrams(strippedword)
         trigrams += countTrigrams(strippedword)
     unigramsPdf = computeUnigramsPdf(unigrams)
-    bigramsPdf = computeBigramsPdf(bigrams)
-    trigramsPdf = computeTrigramsPdf(trigrams)
-    print(unigramsPdf)
-    print(bigramsPdf)
-    print(trigramsPdf)
+    bigramsJointPdf = computeBigramsJointPdf(bigrams)
+    trigramsJointPdf = computeTrigramsJointPdf(trigrams)
+
+    print(np.log(computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf)))
+    print(np.log(computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf)))
+    #print(bigramsPdf)
+    #print(trigramsPdf)
