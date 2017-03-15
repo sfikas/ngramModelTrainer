@@ -1,7 +1,9 @@
 import sys
 import fileinput
 import numpy as np
+import scipy.io
 from collections import Counter
+from os.path import basename
 
 alphabet = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
@@ -116,7 +118,11 @@ if __name__ == "__main__":
     bigramsJointPdf = computeBigramsJointPdf(bigrams)
     trigramsJointPdf = computeTrigramsJointPdf(trigrams)
 
-    print(np.log(computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf)))
-    print(np.log(computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf)))
-    #print(bigramsPdf)
-    #print(trigramsPdf)
+    #print(np.log(computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf)))
+    #print(np.log(computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf)))
+    scipy.io.savemat(basename(sys.argv[1])+'.ngrams.mat', dict(
+        unigrams=unigramsPdf, 
+        bigrams=computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf),
+        trigrams=computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf),
+        )
+    )
