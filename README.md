@@ -1,5 +1,7 @@
 # ngramModelTrainer
 
+[![Build Status](https://travis-ci.org/sfikas/ngramModelTrainer.svg?branch=master)](https://travis-ci.org/sfikas/ngramModelTrainer)
+
 Learns an n-gram language model given a corpus. The corpus should be text file, with a single word per line, containing no inter-word spaces.
 
 The learned quantities are:
