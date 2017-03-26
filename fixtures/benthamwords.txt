@@ -1,10 +1,3 @@
-Simple Segmented Word Retrieval v2.8 [NCSR/IIT/CIL]
-Opening file/data/oldDocuments/bentham..
-Opened file(s) Ok. Read a total of 10649 segmented word images.
-#x# Training set is undefined
-#x# Training (partially labelled) set is undefined
-### Test set begins at id 0 and ends with 10648(10649 elements)
-#x# Validation is undefined
 6.
 The
 evidence
