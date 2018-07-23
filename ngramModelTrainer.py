@@ -141,6 +141,11 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         testMode = False
         filename = sys.argv[1]
+        if len(sys.argv) > 2:
+            alphabet = [
+                'a', 'b', 'c',
+            ]
+            print('Loaded dummy alphabet (abc)')
     else:
         testMode = True
 
