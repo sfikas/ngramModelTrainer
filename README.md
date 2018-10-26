@@ -23,12 +23,12 @@ python ngramModelTrainer <corpus.txt>
 
 There are a few example inputs on ```fixtures/```.
 
-The output is saved as three MATLAB matrices.
+The output is saved as four MATLAB matrices.
 
 * unigrams: u(i) stands for p(i).
 * bigrams: b(i, j) stands for p(j | i).
 * trigrams: t(i, j, k) stands for p(k | j, i).
-
+* quadgrams (tetragrams): q(i, j, k, l) stands for p(l | k, j, i).
 
 
 ## Alphabet
