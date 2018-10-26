@@ -3,6 +3,7 @@ import sys
 import fileinput
 import numpy as np
 import scipy.io
+import tqdm
 from collections import Counter
 from os.path import basename
 
@@ -144,7 +145,8 @@ def main(filename):
     bigrams = Counter()
     trigrams = Counter()
     quadgrams = Counter()
-    for word in fileinput.input(filename):
+    fin = fileinput.input(filename)
+    for word in tqdm.tqdm(fin):
         strippedword = strip(word)
         unigrams += countUnigrams(strippedword)
         bigrams += countBigrams(strippedword)
