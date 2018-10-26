@@ -2,10 +2,11 @@ sudo: required
 dist: trusty
 language: python
 python:
-  - "2.7"
+  - "3.5"
 before_install: 
   - set -ev
   - sudo apt-get update
 install:
   - pip install --only-binary=numpy,scipy numpy scipy
+  - pip install tqdm
 script: python ngramModelTrainer.py
