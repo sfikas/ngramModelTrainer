@@ -4,15 +4,9 @@ import fileinput
 import numpy as np
 import scipy.io
 import tqdm
+import itertools
 from collections import Counter
 from os.path import basename
-
-alphabet = [
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-    'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-    'u', 'v', 'w', 'x', 'y', 'z',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',    
-]
 
 def strip(word):
     # Accepts a string as input, 
@@ -182,14 +176,31 @@ class TestMethods(unittest.TestCase):
         self.assertTrue(abs(quadgramsPdf[alphabet.index('r'), alphabet.index('s'), alphabet.index('o'), alphabet.index('n')] - 1.) < 1e-5)
 
 if __name__ == "__main__":
+    alphabet = [
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+        'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+        'u', 'v', 'w', 'x', 'y', 'z',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',    
+    ]
+
     if len(sys.argv) > 1:
         testMode = False
         filename = sys.argv[1]
         if len(sys.argv) > 2:
-            alphabet = [
-                'a', 'b', 'c',
-            ]
-            print('Loaded dummy alphabet (abc)')
+            if sys.argv[2] == 'dummy':
+                alphabet = [
+                    'a', 'b', 'c',
+                ]
+                print('Loaded dummy alphabet (abc)')
+            elif sys.argv[2] == '--':
+                alphabet = [chr(i) for i in itertools.chain(
+                            range(ord('a'), ord('z') + 1),
+                            range(ord('A'), ord('Z') + 1),
+                            range(ord('0'), ord('9') + 1),
+                        )
+                    ] + ['.', ',', '[', '-', ';', '"', '/', ':', '=', '(', ')', '>', '+', '!', '#', '@', '~', '#']
+            else:
+                raise NotImplementedError
     else:
         testMode = True
 

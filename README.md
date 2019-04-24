@@ -39,3 +39,13 @@ These are held in a python list called 'alphabet', in the following order:
 
 * Positions 0-25: Latin *lowercase* alphabet letters, in standard alphabetical order.
 * Positions 26-35: Digits 0-9.
+
+### 'Alternative' alphabet
+
+A non-standard version of the alphabet may be used.
+This contains a number of extra characters (these are notably encodings of the characters and punctuation found in the George Washington handwritten document set).
+To use this alternative alphabet supply an extra '--' argument, for example:
+
+```
+python ngramModelTrainer <corpus.txt> --
+```
