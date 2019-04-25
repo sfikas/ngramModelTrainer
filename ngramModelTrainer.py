@@ -12,9 +12,13 @@ def strip(word):
     # Accepts a string as input, 
     # returns a string where only characters in alphabet remain.
     res = []
-    for c in word.lower():
+    word = word.strip()
+    #for c in word.lower():
+    for c in word:
         if c in alphabet:
             res += c
+        else:
+            raise Warning('Character {} not in alphabet!'.format(c))
     return ''.join(res)
 
 def countUnigrams(word):
