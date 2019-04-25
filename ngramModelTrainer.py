@@ -209,6 +209,7 @@ if __name__ == "__main__":
         #print(np.log(computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf)))
         #print(np.log(computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf)))
         scipy.io.savemat(basename(filename)+'.ngrams.mat', dict(
+            alphabet=alphabet,
             unigrams=unigramsPdf, 
             bigrams=computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf),
             trigrams=computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf),
