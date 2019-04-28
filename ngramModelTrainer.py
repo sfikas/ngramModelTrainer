@@ -183,7 +183,7 @@ class TestMethods(unittest.TestCase):
         self.assertTrue(abs(trigramsPdf[alphabet.index('x'), alphabet.index('y'), alphabet.index('z')]) < 2./36.)
 
     def test_quadgrams(self):
-        unigramsPdf, bigramsJointPdf, trigramsJointPdf, quadgramsJointPdf = main('fixtures/dummy2.txt')
+        unigramsPdf, bigramsJointPdf, trigramsJointPdf, quadgramsJointPdf = main('fixtures/dummy2.txt', count_tetragrams=True)
         quadgramsPdf = computeQuadgramsConditionalPdf(quadgramsJointPdf, trigramsJointPdf)
         self.assertTrue(abs(quadgramsPdf[alphabet.index('r'), alphabet.index('s'), alphabet.index('o'), alphabet.index('n')] - 1.) < 1e-5)
 
