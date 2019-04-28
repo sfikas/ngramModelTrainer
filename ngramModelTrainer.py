@@ -187,7 +187,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--alphabet', required=False, choices=['almazan36', 'dummy', 'dutta_extended', 'sophia'], default='almazan36', help='Alphabet to be used.')
     parser.add_argument('--input_corpus', dest='input_corpus', default='', help='Input corpus. Each line must be a separate word. If none is given, a simple test is run.')
-    parser.set_defaults(alphabet='almazan36', input_corpus='')
+    parser.add_argument('--compute_tetragrams', dest='compute_tetragrams', action='store_true', help='Compute tetragrams. Default: False (normally too expensive, unless a big corpus with relatively few unigrams is available)')
+    parser.set_defaults(
+            alphabet='almazan36', 
+            input_corpus='',
+            compute_tetragrams=False
+        )
     args = parser.parse_args()
 
     if args.alphabet == 'almazan36':
@@ -224,12 +229,18 @@ if __name__ == "__main__":
         unigramsPdf, bigramsJointPdf, trigramsJointPdf, quadgramsJointPdf = main(filename)
         #print(np.log(computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf)))
         #print(np.log(computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf)))
+        if args.compute_tetragrams:
+            print('Computing tetragrams. This will normally take *a lot* of time..')
+            tetragrams = computeQuadgramsConditionalPdf(quadgramsJointPdf, trigramsJointPdf)
+            print('ok.')
+        else:
+            tetragrams = None
         scipy.io.savemat(basename(filename)+'.ngrams.mat', dict(
             alphabet=alphabet,
             unigrams=unigramsPdf, 
             bigrams=computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf),
             trigrams=computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf),
-            quadgrams=computeQuadgramsConditionalPdf(quadgramsJointPdf, trigramsJointPdf),
+            quadgrams=tetragrams,
             )
         )
     else:
