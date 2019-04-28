@@ -13,13 +13,15 @@ The learned quantities are:
 
 Test the script by running with no argument:
 ```
-python ngramModelTrainer
+python3 ngramModelTrainer
 ```
 
-Run the script with:
+Use the -h flag for details on how to use the tool with proper input:
 ```
-python ngramModelTrainer <corpus.txt>
+python3 ngramModelTrainer -h
 ```
+
+
 
 There are a few example inputs on ```fixtures/```.
 
@@ -40,12 +42,7 @@ These are held in a python list called 'alphabet', in the following order:
 * Positions 0-25: Latin *lowercase* alphabet letters, in standard alphabetical order.
 * Positions 26-35: Digits 0-9.
 
-### 'Alternative' alphabet
+### 'Alternative' alphabets
 
-A non-standard version of the alphabet may be used.
-This contains a number of extra characters (these are notably encodings of the characters and punctuation found in the George Washington handwritten document set).
-To use this alternative alphabet supply an extra '--' argument, for example:
-
-```
-python ngramModelTrainer <corpus.txt> --
-```
+Non-'standard' versions of the above alphabet may be used.
+These include: *dutta_extended*: a number of extra characters (these are notably encodings of the characters and punctuation found in the George Washington handwritten document set). *sophia*: polytonic greek characters. *dummy*: a limited testing set of 3 characters

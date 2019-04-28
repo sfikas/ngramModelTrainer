@@ -5,6 +5,8 @@ import numpy as np
 import scipy.io
 import tqdm
 import itertools
+import argparse
+import logging
 from collections import Counter
 from os.path import basename
 
@@ -180,35 +182,45 @@ class TestMethods(unittest.TestCase):
         self.assertTrue(abs(quadgramsPdf[alphabet.index('r'), alphabet.index('s'), alphabet.index('o'), alphabet.index('n')] - 1.) < 1e-5)
 
 if __name__ == "__main__":
-    alphabet = [
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-        'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-        'u', 'v', 'w', 'x', 'y', 'z',
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',    
-    ]
+    logger = logging.getLogger('::ngramModelTrainer::')
+    logger.info('-------------------')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--alphabet', required=False, choices=['almazan36', 'dummy', 'dutta_extended', 'sophia'], default='almazan36', help='Alphabet to be used.')
+    parser.add_argument('--input_corpus', dest='input_corpus', default='', help='Input corpus. Each line must be a separate word. If none is given, a simple test is run.')
+    parser.set_defaults(alphabet='almazan36', input_corpus='')
+    args = parser.parse_args()
 
-    if len(sys.argv) > 1:
-        testMode = False
-        filename = sys.argv[1]
-        if len(sys.argv) > 2:
-            if sys.argv[2] == 'dummy':
-                alphabet = [
-                    'a', 'b', 'c',
-                ]
-                print('Loaded dummy alphabet (abc)')
-            elif sys.argv[2] == '--':
-                alphabet = [chr(i) for i in itertools.chain(
-                            range(ord('a'), ord('z') + 1),
-                            range(ord('A'), ord('Z') + 1),
-                            range(ord('0'), ord('9') + 1),
-                        )
-                    ] + ['.', ',', '[', '-', ';', '"', '/', ':', '=', '(', ')', '>', '+', '!', '#', '@', '~', '#']
-            else:
-                raise NotImplementedError
+    if args.alphabet == 'almazan36':
+        alphabet = [
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+            'u', 'v', 'w', 'x', 'y', 'z',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',    
+        ]
+    elif args.alphabet == 'dummy':
+        alphabet = [
+            'a', 'b', 'c',
+        ]
+    elif args.alphabet == 'dutta_extended':
+        alphabet = [chr(i) for i in itertools.chain(
+                    range(ord('a'), ord('z') + 1),
+                    range(ord('A'), ord('Z') + 1),
+                    range(ord('0'), ord('9') + 1),
+                )
+            ] + ['.', ',', '[', '-', ';', '"', '/', ':', '=', '(', ')', '>', '+', '!', '#', '@', '~', '#']
+    elif args.alphabet == 'sophia':
+        alphabet = ['ὑ', 'α', '6', 'Ἑ', 'ὥ', 'Ἱ', 'μ', 'L', 'y', 'δ', 'ῦ', 'Β', 'Α', 'ὺ', 'O', 'ἥ', 'S', 'ρ', 'd', 'w', 'Ἀ', 'B', 
+        'ὗ', 'Ὁ', 'Ὑ', 'Ν', 'ᾳ', '8', 'Σ', 'M', 'A', 'Ἦ', 'V', 'κ', '2', 'ῖ', 'g', 'T', 'ἰ', '#', 'r', 'ὐ', 'ἤ', 'β', 'c', 'ῄ', 'ἷ', 'Μ', 'ὄ', 
+        '5', 'ἕ', 'W', 'ϊ', 'Κ', 'ῷ', 'Χ', 'ὁ', 'm', 'ὕ', 'P', 'Ἐ', 'f', 'ὼ', 'υ', 'ν', 'D', 'ἑ', 'ή', 'Ἕ', 'ἀ', 'Ἔ', 'b', 'ώ', 'ὀ', 'ὴ', 'é', 'I', 
+        'Ρ', 'Ὄ', 'Ἠ', 'ἧ', 'ό', 'Ο', '0', 's', '1', 'o', 'K', 'ἁ', 'ἠ', 'ἶ', 'u', 'ἣ', 'ξ', 'λ', 'ι', 'ἦ', 'a', 'Ε', 'ἴ', 'γ', 'k', 'ί', 'ὰ', 'G', 
+        'Ἡ', 'η', 'Θ', 'Τ', 'ἂ', 'C', 'ς', 'Ἰ', 'ὃ', 'ὲ', 'v', '3', 'Φ', 'φ', 'ἄ', 'ύ', 'ἵ', 'p', 'θ', 'ῆ', 'F', 'ζ', 'ά', 'i', 'x', 'n', 'τ', 'π', 
+        'ὡ', 'Λ', 'Δ', 'ῇ', 'ὅ', 'l', 'έ', 'ῳ', 'ε', 'ὸ', 'E', 'R', 'Ἁ', 'ὔ', 'Ἅ', 'ω', '4', 'h', 'ΐ', 'ῥ', 'z', 'ἢ', 'ἔ', 'Ἄ', '9', 'ἅ', 'ο', 'σ', 
+        'ῶ', 'ἐ', 'Γ', 'e', 'ὶ', '7', 'ἡ', 'ἓ', 'Ἂ', 'Ὕ', 't', 'ῃ', 'ἱ', 'Π', 'ὠ', 'Ὅ', 'ἃ', 'χ', 'ᾶ', 'ψ']
     else:
-        testMode = True
+        raise NotImplementedError('Unknown alphabet.')
 
-    if not testMode:
+    if args.input_corpus != '':
+        filename = args.input_corpus
         unigramsPdf, bigramsJointPdf, trigramsJointPdf, quadgramsJointPdf = main(filename)
         #print(np.log(computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf)))
         #print(np.log(computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf)))
