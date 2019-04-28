@@ -140,22 +140,28 @@ def computeQuadgramsConditionalPdf(quadgramsJointPdf, trigramsJointPdf):
                 res[paranteprevious, anteprevious, previous, :] = res[paranteprevious, anteprevious, previous, :] / res[paranteprevious, anteprevious, previous, :].flatten().sum()
     return res
 
-def main(filename):
+def main(filename, count_tetragrams=False):
     unigrams = Counter()
     bigrams = Counter()
     trigrams = Counter()
-    quadgrams = Counter()
+    if count_tetragrams:
+        print('Computing tetragrams. This will normally take *a lot* of time..')
+        quadgrams = Counter()
     fin = fileinput.input(filename)
     for word in tqdm.tqdm(fin):
         strippedword = strip(word)
         unigrams += countUnigrams(strippedword)
         bigrams += countBigrams(strippedword)
         trigrams += countTrigrams(strippedword)
-        quadgrams += countQuadgrams(strippedword)
+        if count_tetragrams:
+            quadgrams += countQuadgrams(strippedword)
     unigramsPdf = computeUnigramsPdf(unigrams)
     bigramsJointPdf = computeBigramsJointPdf(bigrams)
     trigramsJointPdf = computeTrigramsJointPdf(trigrams)
-    quadgramsJointPdf = computeQuadgramsJointPdf(quadgrams)
+    if count_tetragrams:
+        quadgramsJointPdf = computeQuadgramsJointPdf(quadgrams)
+    else:
+        quadgramsJointPdf = None
     return unigramsPdf, bigramsJointPdf, trigramsJointPdf, quadgramsJointPdf
 
 class TestMethods(unittest.TestCase):
@@ -226,22 +232,17 @@ if __name__ == "__main__":
 
     if args.input_corpus != '':
         filename = args.input_corpus
-        unigramsPdf, bigramsJointPdf, trigramsJointPdf, quadgramsJointPdf = main(filename)
+        unigramsPdf, bigramsJointPdf, trigramsJointPdf, quadgramsJointPdf = main(filename, count_tetragrams=args.compute_tetragrams)
         #print(np.log(computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf)))
         #print(np.log(computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf)))
-        if args.compute_tetragrams:
-            print('Computing tetragrams. This will normally take *a lot* of time..')
-            tetragrams = computeQuadgramsConditionalPdf(quadgramsJointPdf, trigramsJointPdf)
-            print('ok.')
-        else:
-            tetragrams = None
-        scipy.io.savemat(basename(filename)+'.ngrams.mat', dict(
+        savedict = dict(
             alphabet=alphabet,
             unigrams=unigramsPdf, 
             bigrams=computeBigramsConditionalPdf(bigramsJointPdf, unigramsPdf),
             trigrams=computeTrigramsConditionalPdf(trigramsJointPdf, bigramsJointPdf),
-            quadgrams=tetragrams,
             )
-        )
+        if args.compute_tetragrams:
+            savedict['quadgrams'] = computeQuadgramsConditionalPdf(quadgramsJointPdf, trigramsJointPdf)
+        scipy.io.savemat(basename(filename)+'.ngrams.mat', savedict)
     else:
         unittest.main()
